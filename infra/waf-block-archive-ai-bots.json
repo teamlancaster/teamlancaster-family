@@ -1,0 +1,12 @@
+{
+  "_comment": "NOT APPLIED. Cloudflare WAF custom rule (Free plan allows 5) for zone 712c61fe6e7e08f8123082b3fa54a2fb (teamlancaster.com). Apply via dashboard (Security > WAF > Custom rules) or: PUT https://api.cloudflare.com/client/v4/zones/712c61fe6e7e08f8123082b3fa54a2fb/rulesets/phases/http_request_firewall_custom/entrypoint with {\"rules\": [...]} — NOTE: that PUT replaces ALL existing custom rules in the phase; list them first (GET same URL) and merge. Needs a token with Zone > Zone WAF: Edit. Search engines (Googlebot, Bingbot) are deliberately NOT blocked so they can fetch pages and see noindex. Also turn on Security > Bots > 'Block AI bots' (API: PUT /zones/{zone_id}/bot_management {\"ai_bots_protection\":\"block\"}, needs Zone > Bot Management: Edit).",
+  "rules": [
+    {
+      "description": "teamlancaster: block archive + AI crawlers (family-only site)",
+      "action": "block",
+      "enabled": true,
+      "expression": "(lower(http.user_agent) contains \"ia_archiver\") or (lower(http.user_agent) contains \"archive.org_bot\") or (lower(http.user_agent) contains \"special_archiver\") or (lower(http.user_agent) contains \"heritrix\") or (lower(http.user_agent) contains \"wayback\") or (lower(http.user_agent) contains \"arquivo-web-crawler\") or (lower(http.user_agent) contains \"ccbot\") or (lower(http.user_agent) contains \"gptbot\") or (lower(http.user_agent) contains \"chatgpt-user\") or (lower(http.user_agent) contains \"oai-searchbot\") or (lower(http.user_agent) contains \"claudebot\") or (lower(http.user_agent) contains \"claude-web\") or (lower(http.user_agent) contains \"anthropic-ai\") or (lower(http.user_agent) contains \"perplexitybot\") or (lower(http.user_agent) contains \"perplexity-user\") or (lower(http.user_agent) contains \"bytespider\") or (lower(http.user_agent) contains \"amazonbot\") or (lower(http.user_agent) contains \"applebot-extended\") or (lower(http.user_agent) contains \"meta-externalagent\") or (lower(http.user_agent) contains \"facebookbot\") or (lower(http.user_agent) contains \"cohere-ai\") or (lower(http.user_agent) contains \"diffbot\") or (lower(http.user_agent) contains \"imagesiftbot\") or (lower(http.user_agent) contains \"omgilibot\") or (lower(http.user_agent) contains \"youbot\") or (lower(http.user_agent) contains \"timpibot\") or (lower(http.user_agent) contains \"ai2bot\") or (lower(http.user_agent) contains \"img2dataset\")"
+    }
+  ],
+  "bot_management": { "ai_bots_protection": "block" }
+}

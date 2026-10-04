@@ -1,0 +1,54 @@
+// teamlancaster-family Worker. NOT DEPLOYED. See docs/DEPLOY-CHECKLIST.md.
+// Production values below are placeholders (REPLACE_ME) until Chris provides them.
+// Local dev overrides vars from .dev.vars (never deployed).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "teamlancaster-family",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // account_id: set at deploy time via CLOUDFLARE_ACCOUNT_ID (Chris provides it).
+
+  // Static files (CSS, fonts, crest). run_worker_first => every request goes through the Worker,
+  // so security/noindex headers and the admin gate apply to everything, including assets.
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": true },
+
+  // Spec §9.5: workers.dev and preview URLs OFF. The admin JWT check fails closed on them anyway.
+  "workers_dev": false,
+  "preview_urls": false,
+  // Custom Domains are added at cutover (Phase 4), not now:
+  // "routes": [ { "pattern": "teamlancaster.com", "custom_domain": true }, { "pattern": "www.teamlancaster.com", "custom_domain": true } ],
+
+  "vars": {
+    "ENVIRONMENT": "production",                       // ONLY .dev.vars may set "local"; tests assert this
+    "CANONICAL_HOSTS": "teamlancaster.com,www.teamlancaster.com",
+    "ADMIN_ORIGIN": "https://teamlancaster.com",
+    "SITE_URL": "https://teamlancaster.com",
+    "ACCESS_TEAM_DOMAIN": "REPLACE_ME.cloudflareaccess.com", // Zero Trust team domain
+    "ACCESS_AUD": "REPLACE_ME",                            // Access application AUD tag
+    "ADMIN_EMAILS": "REPLACE_ME@example.com",              // defense in depth, mirrors the Access policy
+    "NOTIFY_TO": "lancaster-ai@teamlancaster.com",         // never rendered on any page
+    "NOTIFY_FROM": "Team Lancaster <notify@notify.teamlancaster.com>",
+    "TURNSTILE_SITE_KEY": "REPLACE_ME",
+    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast",
+    "GUIDE_DAILY_NEURON_BUDGET": "2000",                   // 20% of the 10k/day free allowance
+    "GUIDE_PER_IP_PER_HOUR": "20"
+  },
+  // Secrets (wrangler secret put ...): RESEND_API_KEY, TURNSTILE_SECRET, IP_HASH_PEPPER, COOKIE_HMAC_KEY
+
+  "d1_databases": [
+    { "binding": "DB", "database_name": "teamlancaster-family", "database_id": "REPLACE_ME_AFTER_d1_create", "migrations_dir": "migrations" }
+  ],
+  "r2_buckets": [
+    { "binding": "PHOTOS", "bucket_name": "teamlancaster-photos" }   // PRIVATE: no public access, no r2.dev
+  ],
+  // Used ONLY by the public AI guide for its own budget + per-IP limit (no people data in it).
+  "kv_namespaces": [
+    { "binding": "GUIDE_KV", "id": "REPLACE_ME_AFTER_kv_create" }
+  ],
+  "ai": { "binding": "AI" },
+
+  // Daily retention: purge resolved requests + quarantine after 90 days, soft-deleted photos after 30.
+  "triggers": { "crons": ["17 11 * * *"] },
+  "observability": { "enabled": true }
+}

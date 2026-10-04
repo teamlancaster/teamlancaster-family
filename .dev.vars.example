@@ -1,0 +1,11 @@
+# LOCAL ONLY (wrangler dev). Copy to .dev.vars. Never deploy these values.
+ENVIRONMENT=local
+DEV_ADMIN_EMAIL=dev@localhost
+ADMIN_ORIGIN=http://localhost:8787
+SITE_URL=http://localhost:8787
+# Cloudflare's documented always-pass Turnstile TEST keys
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+IP_HASH_PEPPER=local-dev-pepper-not-secret
+COOKIE_HMAC_KEY=local-dev-cookie-key-not-secret
+# RESEND_API_KEY unset locally => notification emails are dry-run logged (pointer only)
